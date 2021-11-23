@@ -4,26 +4,32 @@ void philo_routine(sum_args *args)
 {
 	uint64_t	time;
 
-	while (1)
+	while (!args->set.dead)
 	{
 		pthread_mutex_lock(&(*args).table->forks[args->nerds->left_fork]);
 		pthread_mutex_lock(&(*args).table->forks[args->nerds->right_fork]);
-		printf("%llu philosopher has taken a fork\n", args->nerds->position);
+		printf("%llu philosopher has taken a left fork\n",
+			   args->nerds->position);
+		printf("%llu philosopher has taken a right fork\n",
+			   args->nerds->position);
 		printf("%llu philosopher is eating\n", args->nerds->position);
-		sleep(args->set.time_to_eat);
+		usleep(args->set.time_to_eat);
 		time = get_time();
 		pthread_mutex_unlock(&(args->table->forks)[args->nerds->left_fork]);
 		pthread_mutex_unlock(&(args->table->forks)[args->nerds->right_fork]);
 		printf("%llu philosopher is sleep\n", args->nerds->position);
-		sleep(args->set.time_to_sleep);
-		time = get_time() - time;
-		if (time > args->set.time_to_die)
+		usleep(args->set.time_to_sleep);
+		printf("%llu philosopher thinking\n", args->nerds->position);
+		time = (get_time() - time) * 100;
+//		printf("%llu TIMe\n", time);
+		if (!args->set.dead && time > args->set.time_to_die)
 		{
 			printf("%llu philosopher is dead\n", args->nerds->position);
-			pthread_cancel(pthread_self());
-			usleep(200);
+			args->set.dead = 1;
+			break;
 		}
 	}
+//	pthread_detach(pthread_self());
 }
 
 int	create_dinner(t_settings set)
@@ -33,15 +39,6 @@ int	create_dinner(t_settings set)
 	sum_args			*args;
 
 	args = args_fabrik(set);
-//	for (uint64_t i = 0; i < set.num_phil; i++)
-//	{
-//		printf("args index | %llu, args philo pos | %llu, args forks | %llu "
-//			   "%llu || set num %llu || set time %llu \n", i, args[i]
-//			   .nerds->position, args[i]
-//			   .nerds->left_fork,
-//			   args[i].nerds->right_fork, args[i].set.num_phil, args[i].set
-//			   .time_to_sleep);
-//	}
 	index = 0;
 	while (index < set.num_phil)
 	{

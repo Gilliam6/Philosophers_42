@@ -5,12 +5,13 @@
 # include <sys/time.h>
 typedef struct	s_timing
 {
-	uint64_t	num_phil;
-	uint64_t	time_to_eat;
-	uint64_t	time_to_sleep;
-	uint64_t 	time_to_think;
-	uint64_t 	time_to_die;
-	uint64_t	num_repeat;
+	uint64_t		num_phil;
+	uint64_t		time_to_eat;
+	uint64_t		time_to_sleep;
+	uint64_t 		time_to_think;
+	uint64_t 		time_to_die;
+	uint64_t		num_repeat;
+	unsigned char	dead;
 }				t_settings;
 
 typedef struct	s_philosofers

@@ -1,4 +1,4 @@
-SRCS_LIST = philosofers_42.c fabric.c validator.c init_struct.c dinner.c
+SRCS_LIST = philosofers_42.c fabric.c validator.c init_struct.c dinner.c routine.c
 
 SRCS_DIR = srcs/
 SRCS = $(addprefix $(SRCS_DIR), $(SRCS_LIST))
