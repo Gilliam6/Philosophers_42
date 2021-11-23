@@ -9,7 +9,6 @@ void	custom_exit(char *str)
 int	main(int argc, char **argv)
 {
 	t_settings		set;
-	t_nerds			*nerds;
 
 	if (argc < 5 || argc > 6)
 		custom_exit("Wrong number of arguments\n");
