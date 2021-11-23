@@ -6,6 +6,14 @@ void	custom_exit(char *str)
 	exit (0);
 }
 
+uint64_t	get_time(void)
+{
+	static struct timeval	time;
+
+	gettimeofday(&time, NULL);
+	return ((time.tv_sec * (uint64_t)1000) + (time.tv_usec / 1000));
+}
+
 int	main(int argc, char **argv)
 {
 	t_settings		set;

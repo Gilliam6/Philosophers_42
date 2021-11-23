@@ -2,6 +2,7 @@
 # define PHILO_H
 # include "../includes/libft.h"
 # include <pthread.h>
+# include <sys/time.h>
 typedef struct	s_timing
 {
 	uint64_t	num_phil;
@@ -15,24 +16,27 @@ typedef struct	s_timing
 typedef struct	s_philosofers
 {
 	uint64_t		position;
-	unsigned char	left_fork;
-	unsigned char	right_fork;
+	uint64_t		left_fork;
+	uint64_t		right_fork;
 }				t_nerds;
+
+typedef  struct s_table
+{
+	pthread_mutex_t *forks;
+}				t_table;
 
 typedef struct	s_args
 {
 	t_settings		set;
 	t_nerds			*nerds;
-	pthread_mutex_t *forks;
+	t_table			*table;
 }				sum_args;
-pthread_mutex_t dont_touch_forks = PTHREAD_MUTEX_INITIALIZER;
+sum_args	*args_fabrik(t_settings set);
+uint64_t	get_time(void);
 
-void args_init(t_nerds *nerds, sum_args **args);
 int		init_struct(t_settings *set, int argc, char **argv);
 int		check_args(int argc, char **argv);
 void	custom_exit(char *str);
-t_nerds	*philo_fabrik(t_nerds *nerds, uint64_t len);
-int	create_dinner(t_settings set);
-void forks_mute_init(sum_args **args, uint64_t len);
+int		create_dinner(t_settings set);
 
 #endif

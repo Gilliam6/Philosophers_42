@@ -1,34 +1,62 @@
 #include "../includes/philo.h"
 
-void forks_mute_init(sum_args **args, uint64_t len)
+t_nerds	*create_nerds(t_settings set)
 {
+	t_nerds		*nerds;
 	uint64_t	i;
 
+	nerds = (t_nerds *)malloc(sizeof(t_nerds) * set.num_phil);
+	if (!nerds)
+		return (0);
 	i = 0;
-	(*args)->forks = malloc(sizeof((*args)->forks) * len);
-	if (!(*args)->forks)
+	while (i < set.num_phil)
 	{
-		free((*args)->nerds);
-		custom_exit("Error Malloc\n");
-	}
-	while (i < len)
-	{
-		pthread_mutex_init(&(*args)->forks[i], NULL);
-		i++;
-	}
-}
-
-t_nerds	*philo_fabrik(t_nerds *nerds, uint64_t len)
-{
-	uint64_t	i;
-
-	i = 0;
-	while (i < len)
-	{
-		nerds[i].position = i;
 		nerds[i].left_fork = i;
-		nerds[i].right_fork = (i + 1) % len;
+		nerds[i].right_fork = (i + 1) % set.num_phil;
+		nerds[i].position = i;
 		i++;
 	}
 	return (nerds);
+}
+
+t_table	*create_table(t_settings set)
+{
+	t_table	*table;
+	uint64_t i;
+
+	table = malloc(sizeof(table));
+	table->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * set.num_phil);
+	if (!table->forks)
+		return (0);
+	i = 0;
+	while (i < set.num_phil)
+	{
+		pthread_mutex_init(&table->forks[i], NULL);
+		i++;
+	}
+
+	return (table);
+}
+
+sum_args	*args_fabrik(t_settings set)
+{
+	sum_args	*args;
+	t_table		*table;
+	t_nerds 	*nerds;
+	uint64_t	i;
+
+	args = (sum_args *)malloc(sizeof(sum_args) * set.num_phil);
+	if (!args)
+		custom_exit("Malloc Error\n");
+	table = create_table(set);
+	nerds = create_nerds(set);
+	i = 0;
+	while (i < set.num_phil)
+	{
+		args[i].set = set;
+		args[i].table = table;
+		args[i].nerds = &nerds[i];
+		i++;
+	}
+	return (args);
 }

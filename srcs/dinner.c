@@ -2,45 +2,57 @@
 
 void philo_routine(sum_args *args)
 {
+	uint64_t	time;
+
 	while (1)
 	{
-		pthread_mutex_lock(&(args)->forks[args->nerds->left_fork]);
-		pthread_mutex_lock(&(args)->forks[args->nerds->right_fork]);
-		ft_putnbr_fd(args->nerds->position, 1);
-		ft_putstr_fd(" philosopher has taken a fork\n", 1));
-		ft_putnbr_fd(args->nerds->position, 1);
-		ft_putstr_fd(" philosopher is eating\n", 1));
-		usleep(args->set.time_to_eat);
-		pthread_mutex_unlock(&(args)->forks[args->nerds->left_fork]);
-		pthread_mutex_unlock(&(args)->forks[args->nerds->left_fork]);
-		ft_putnbr_fd(args->nerds->position, 1);
-		ft_putstr_fd(" philosopher is sleeping\n", 1));
-		usleep(args->set.time_to_sleep);
-
+		pthread_mutex_lock(&(*args).table->forks[args->nerds->left_fork]);
+		pthread_mutex_lock(&(*args).table->forks[args->nerds->right_fork]);
+		printf("%llu philosopher has taken a fork\n", args->nerds->position);
+		printf("%llu philosopher is eating\n", args->nerds->position);
+		sleep(args->set.time_to_eat);
+		time = get_time();
+		pthread_mutex_unlock(&(args->table->forks)[args->nerds->left_fork]);
+		pthread_mutex_unlock(&(args->table->forks)[args->nerds->right_fork]);
+		printf("%llu philosopher is sleep\n", args->nerds->position);
+		sleep(args->set.time_to_sleep);
+		time = get_time() - time;
+		if (time > args->set.time_to_die)
+		{
+			printf("%llu philosopher is dead\n", args->nerds->position);
+			pthread_cancel(pthread_self());
+			usleep(200);
+		}
 	}
 }
 
 int	create_dinner(t_settings set)
 {
-	pthread_t	threads[set.num_phil];
-	t_nerds		nerds[set.num_phil];
-	sum_args	args[set.num_phil];
-	uint64_t	index;
+	pthread_t			threads[set.num_phil];
+	uint64_t			index;
+	sum_args			*args;
 
-	nerds = philo_fabrik(nerds, set.num_phil);
-	args->nerds = nerds;
-	args->set = set;
-	forks_mute_init(&args[], set.num_phil);
+	args = args_fabrik(set);
+//	for (uint64_t i = 0; i < set.num_phil; i++)
+//	{
+//		printf("args index | %llu, args philo pos | %llu, args forks | %llu "
+//			   "%llu || set num %llu || set time %llu \n", i, args[i]
+//			   .nerds->position, args[i]
+//			   .nerds->left_fork,
+//			   args[i].nerds->right_fork, args[i].set.num_phil, args[i].set
+//			   .time_to_sleep);
+//	}
 	index = 0;
 	while (index < set.num_phil)
 	{
-		pthread_create(&threads[index], NULL, philo_routine, &args[index]);
+		pthread_create(&threads[index], NULL, (void *(*)(void *))
+		philo_routine, &args[index]);
 		index++;
 	}
 	index = 0;
 	while (index < set.num_phil)
 	{
-		pthread_join(&threads[index], NULL);
+		pthread_join(threads[index], NULL);
 		index++;
 	}
 	return (0);
