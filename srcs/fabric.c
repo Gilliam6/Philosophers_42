@@ -28,13 +28,14 @@ t_table	*create_table(t_settings set)
 	table->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * set.num_phil);
 	if (!table->forks)
 		return (0);
+	table->is_dead = 0;
 	i = 0;
 	while (i < set.num_phil)
 	{
 		pthread_mutex_init(&table->forks[i], NULL);
 		i++;
 	}
-
+	pthread_mutex_init(&table->mute_nerds, NULL);
 	return (table);
 }
 
