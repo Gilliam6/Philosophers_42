@@ -23,7 +23,6 @@ int	init_struct(t_settings *set, int argc, char **argv)
 	if (check_args(argc, argv))
 		return (1);
 	set->num_phil = ft_atoi_uint_64(argv[1]);
-	set->dead = 0;
 	set->time_to_die = ft_atoi_uint_64(argv[2]);
 	set->time_to_eat = ft_atoi_uint_64(argv[3]);
 	set->time_to_sleep = ft_atoi_uint_64(argv[4]);

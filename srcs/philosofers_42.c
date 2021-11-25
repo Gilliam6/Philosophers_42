@@ -8,10 +8,10 @@ void	custom_exit(char *str)
 
 uint64_t	get_time(void)
 {
-	static struct timeval	time;
+	static struct timeval	tv;
 
-	gettimeofday(&time, NULL);
-	return (time.tv_usec);
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * (uint64_t)1000) + (tv.tv_usec / 1000));
 }
 
 int	main(int argc, char **argv)

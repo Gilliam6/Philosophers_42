@@ -2,22 +2,29 @@
 
 void philo_routine(sum_args *args)
 {
-	uint64_t	time;
-
-	while (!args->table->is_dead)
+	args->nerds->timestamp = get_time();
+	args->nerds->last_eat = get_time();
+//	pthread_detach(pthread_self());
+	while (!args->table->dead)
 	{
-		if (!args->table->is_dead)
-			take_fork(args);
-		if (!args->table->is_dead)
-			time = eat_spaghetti(args);
-		if (!args->table->is_dead)
-			sleep_well(args);
-		time = (reflexing(args) - time);
-		if (!args->table->is_dead && time > args->set.time_to_die)
+		if (args->nerds->last_eat && get_time() - args->nerds->last_eat < args->set
+		.time_to_die)
 		{
-			printf("%llu philosopher is dead\n", args->nerds->position);
-			args->table->is_dead = 1;
-			pthread_mutex_lock(&(*args).table->mute_nerds);
+			pthread_mutex_lock(&(*args).table->forks[args->nerds->left_fork]);
+			pthread_mutex_lock(&(*args).table->forks[args->nerds->right_fork]);
+			if (get_time() - args->nerds->last_eat > args->set.time_to_die)
+			{
+				dead(args);
+				break;
+			}
+			take_fork(args);
+			eat_spaghetti(args);
+			sleep_well(args);
+			reflexing(args);
+		}
+		else
+		{
+			dead(args);
 			break;
 		}
 	}
@@ -29,10 +36,14 @@ int	create_dinner(t_settings set)
 	pthread_t			threads[set.num_phil];
 	uint64_t			index;
 	sum_args			*args;
+	void                *status;
 
+	status = 0;
 	args = args_fabrik(set);
 	index = 0;
-	pthread_mutex_init(&die_mute, NULL);
+//	for (int i = 0; i < (int)args->set.num_phil; i++)
+//		printf("%llu %llu forks\n", args[i].nerds->left_fork,
+//			   args[i].nerds->right_fork);
 	while (index < set.num_phil)
 	{
 		pthread_create(&threads[index], NULL, (void *(*)(void *))
@@ -40,9 +51,16 @@ int	create_dinner(t_settings set)
 		index++;
 	}
 	index = 0;
+
 	while (index < set.num_phil)
 	{
-		pthread_join(threads[index], NULL);
+		pthread_join(threads[index], &status);
+		if (status)
+		{
+			index = -1;
+			while(++index < set.num_phil)
+				pthread_detach(threads[index]);
+		}
 		index++;
 	}
 	return (0);
